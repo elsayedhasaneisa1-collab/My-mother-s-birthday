@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ڪل سنةة ونت طيبه يࢪوحي 🥳❤</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: #0a0a0a;
+    overflow: hidden;
+    color: white;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* ===== شاشة الباسورد ===== */
+  #login-screen {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: opacity 0.8s ease, visibility 0.8s;
+  }
+  #login-screen.hidden { opacity: 0; visibility: hidden; }
+
+  #login-box {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    padding: 50px 40px;
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+    animation: fadeUp 0.8s ease;
+  }
+  #login-box h1 {
+    font-family: 'Amiri', serif;
+    font-size: 32px;
+    color: #f5d5a8;
+    margin-bottom: 8px;
+  }
+  #login-box p { color: #94a3b8; font-size: 14px; margin-bottom: 25px; }
+  #login-box input {
+    width: 100%;
+    padding: 15px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(245,213,168,0.2);
+    border-radius: 14px;
+    font-size: 16px;
+    text-align: center;
+    outline: none;
+    font-family: inherit;
+    color: white;
+    transition: 0.3s;
+    letter-spacing: 3px;
+  }
+  #login-box input:focus { border-color: #f5d5a8; background: rgba(245,213,168,0.05); }
+  #login-box button {
+    margin-top: 18px;
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #f5d5a8, #c9a87c);
+    color: #1a1a2e;
+    border: none;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: 0.3s;
+  }
+  #login-box button:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(245,213,168,0.3); }
+  .error { color: #f87171; font-size: 13px; margin-top: 12px; display: none; }
+
+  /* ===== الموقع الرئيسي ===== */
+  #main {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    position: relative;
+  }
+  #main.show { display: block; }
+
+  .slideshow { position: absolute; inset: 0; z-index: 0; }
+  .slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transform: scale(1.1);
+    transition: opacity 2s ease, transform 8s ease;
+    filter: brightness(0.35) blur(2px);
+  }
+  .slide.active { opacity: 1; transform: scale(1); }
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(10,10,20,0.75) 0%, rgba(20,20,40,0.55) 100%);
+    z-index: 1;
+  }
+
+  .content {
+    position: relative;
+    z-index: 2;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    text-align: center;
+    overflow-y: auto;
+  }
+
+  .title {
+    font-family: 'Amiri', serif;
+    font-size: clamp(22px, 3.5vw, 40px);
+    color: #f5d5a8;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+    text-shadow: 0 4px 30px rgba(245,213,168,0.5);
+    opacity: 0;
+    animation: fadeIn 1.5s ease forwards 0.3s;
+  }
+
+  /* ===== عداد العمر ===== */
+  .age-counter {
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(245,213,168,0.25);
+    border-radius: 20px;
+    padding: 16px 22px;
+    margin-bottom: 15px;
+    max-width: 850px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    opacity: 0;
+    animation: fadeIn 1.5s ease forwards 0.6s;
+  }
+  .age-counter .age-label {
+    font-family: 'Amiri', serif;
+    font-size: clamp(13px, 1.5vw, 17px);
+    color: #f5d5a8;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+    line-height: 1.5;
+  }
+  .age-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+  .age-box {
+    background: rgba(245,213,168,0.06);
+    border: 1px solid rgba(245,213,168,0.15);
+    border-radius: 12px;
+    padding: 10px 5px;
+    transition: 0.3s;
+    overflow: hidden;
+  }
+  .age-box:hover {
+    background: rgba(245,213,168,0.12);
+    border-color: rgba(245,213,168,0.4);
+    transform: translateY(-2px);
+  }
+  .age-num {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: clamp(15px, 2vw, 24px);
+    color: #ffffff;
+    text-shadow: 0 0 15px rgba(245,213,168,0.6);
+    font-variant-numeric: tabular-nums;
+    display: block;
+    line-height: 1.2;
+    min-height: 1.2em;
+  }
+  /* animation على تغير الأرقام */
+  .age-num.flash {
+    animation: flashNum 0.5s ease;
+  }
+  @keyframes flashNum {
+    0%   { transform: translateY(0); color: #ffffff; }
+    30%  { transform: translateY(-6px); color: #f5d5a8; text-shadow: 0 0 25px #f5d5a8; }
+    60%  { transform: translateY(0); color: #f5d5a8; }
+    100% { transform: translateY(0); color: #ffffff; text-shadow: 0 0 15px rgba(245,213,168,0.6); }
+  }
+  .age-name {
+    font-size: clamp(9px, 1vw, 12px);
+    color: #94a3b8;
+    margin-top: 4px;
+    display: block;
+    letter-spacing: 0.3px;
+  }
+
+  /* ===== رسالة "من يوم ما اتولدت" ===== */
+  .birth-msg {
+    background: linear-gradient(135deg, rgba(245,213,168,0.12), rgba(245,213,168,0.04));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(245,213,168,0.3);
+    border-radius: 18px;
+    padding: 16px 25px;
+    margin-bottom: 15px;
+    max-width: 850px;
+    width: 100%;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    opacity: 0;
+    animation: fadeIn 1.5s ease forwards 0.9s;
+  }
+  .birth-msg p {
+    font-family: 'Amiri', serif;
+    font-size: clamp(14px, 1.7vw, 20px);
+    color: #f5d5a8;
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  /* تأثير الكتابة */
+  .quote-box {
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(20px);
+    padding: 25px 35px;
+    border-radius: 20px;
+    border: 1px solid rgba(245,213,168,0.2);
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+  .typewriter {
+    font-family: 'Amiri', serif;
+    font-size: clamp(16px, 2vw, 26px);
+    color: white;
+    max-width: 100%;
+    line-height: 1.7;
+    min-height: 2.5em;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+  }
+  .typewriter .cursor {
+    display: inline-block;
+    width: 3px;
+    height: 1em;
+    background: #f5d5a8;
+    margin-right: 4px;
+    vertical-align: middle;
+    animation: blink 0.8s infinite;
+    box-shadow: 0 0 10px #f5d5a8;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .signature {
+    font-family: 'Amiri', serif;
+    font-size: clamp(15px, 1.7vw, 20px);
+    color: #f5d5a8;
+    margin-top: 12px;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+  }
+  .signature.show { opacity: 1; }
+
+  /* نقاط التنقل */
+  .dots {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 10;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: 0.4s;
+    border: 1px solid rgba(245,213,168,0.3);
+  }
+  .dot.active {
+    background: #f5d5a8;
+    width: 30px;
+    border-radius: 5px;
+    box-shadow: 0 0 15px #f5d5a8;
+  }
+
+  .particle {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background: #f5d5a8;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 3;
+    box-shadow: 0 0 8px #f5d5a8;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    from { transform: translateY(100vh); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    to { transform: translateY(-10vh); opacity: 0; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn { to { opacity: 1; } }
+
+  /* زر الموسيقى */
+  #music-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(245,213,168,0.3);
+    color: #f5d5a8;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 20;
+    transition: 0.4s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  }
+  #music-btn:hover {
+    transform: scale(1.1);
+    border-color: #f5d5a8;
+    box-shadow: 0 0 25px rgba(245,213,168,0.4);
+  }
+  #music-btn.playing { animation: pulse 2s ease infinite; }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245,213,168,0.5); }
+    50% { box-shadow: 0 0 0 15px rgba(245,213,168,0); }
+  }
+
+  @media (max-width: 600px) {
+    .age-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .quote-box { padding: 18px 15px; }
+    .dots { bottom: 10px; }
+    #music-btn { top: 10px; left: 10px; width: 40px; height: 40px; font-size: 16px; }
+    .age-counter { padding: 12px 12px; }
+    .birth-msg { padding: 12px 15px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- شاشة الباسورد -->
+<div id="login-screen">
+  <div id="login-box">
+    <h1>أهلاً يا أمي</h1>
+    <p>اكتبي كلمة السر عشان تدخلي 🌸</p>
+    <input type="password" id="pass" placeholder="••••••••" onkeypress="if(event.key==='Enter')checkPass()">
+    <button onclick="checkPass()">دخول</button>
+    <p class="error" id="err">مش صح يا أمي، جربي تاني 🌸</p>
+  </div>
+</div>
+
+<!-- الموقع -->
+<div id="main">
+  <div class="slideshow" id="slideshow"></div>
+  <div class="overlay"></div>
+
+  <button id="music-btn" onclick="toggleMusic()" title="تشغيل/إيقاف الموسيقى">
+    <span id="music-icon">🔇</span>
+  </button>
+
+  <div class="content">
+    <h1 class="title">لأغلى إنسانة في الكون</h1>
+
+    <!-- عداد العمر -->
+    <div class="age-counter">
+      <div class="age-label">🌷 عمرك يا أمي من يوم ما اتولدتي (1986) لحد اللحظة دي:</div>
+      <div class="age-grid">
+        <div class="age-box"><span class="age-num" id="c-years">0</span><span class="age-name">سنة</span></div>
+        <div class="age-box"><span class="age-num" id="c-days">0</span><span class="age-name">يوم</span></div>
+        <div class="age-box"><span class="age-num" id="c-hours">0</span><span class="age-name">ساعة</span></div>
+        <div class="age-box"><span class="age-num" id="c-minutes">0</span><span class="age-name">دقيقة</span></div>
+        <div class="age-box"><span class="age-num" id="c-seconds">0</span><span class="age-name">ثانية</span></div>
+      </div>
+    </div>
+
+    <!-- رسالة "من يوم ما اتولدت" -->
+    <div class="birth-msg">
+      <p>✨ من يوم ما اتولدتي في 1986، والدنيا بقت أحلى... لأنها استلمت أجمل قلب فيها 🤍</p>
+    </div>
+
+    <div class="quote-box">
+      <div class="typewriter" id="typewriter"></div>
+      <div class="signature" id="signature">— ابنك اللي بيحبك 🤍</div>
+    </div>
+
+    <div class="dots" id="dots"></div>
+  </div>
+</div>
+
+<audio id="bg-music" loop preload="auto">
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  // ============ الإعدادات ============
+  const PASSWORD = "1986";                   // ✏️ الباسورد
+  const BIRTH_DATE = new Date(1986, 9, 1);   // ✏️ 1 يناير 1986 (غيّر الشهر/اليوم لو مختلف)
+
+  const IMAGES = [
+    "hala.png",
+    "hala.png",
+    "hala.png",
+    "hala.png"
+  ];
+
+  const MESSAGES = [
+    "يا أمي، إنتي أول حاجة بحبها في الدنيا، وآخر حاجة بفكر فيها قبل ما أنام 🌙",
+    "كل سهرة سهرتيها عشاني، وكل دعوة دعيتيها في سجودك، هي سر نجاحي في الدنيا ❤️",
+    "شكراً على كل دمعة فرح شوفتيها في عنيكي، وكل حضن دفّاني لما الدنيا كانت تقسى عليّ 🤍",
+    "هفضل أحاول أكون ابن يستاهل كل تعبك، كل يوم، لحد آخر يوم في عمري 🌷"
+  ];
+
+  // ============ حماية ============
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    if (e.key === 'F12') { e.preventDefault(); return false; }
+    if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) {
+      e.preventDefault(); return false;
+    }
+    if (e.ctrlKey && e.key.toUpperCase() === 'U') { e.preventDefault(); return false; }
+    if (e.ctrlKey && e.key.toUpperCase() === 'S') { e.preventDefault(); return false; }
+    if (e.ctrlKey && ['C','A'].includes(e.key.toUpperCase())) { e.preventDefault(); return false; }
+  });
+  document.addEventListener('dragstart', e => e.preventDefault());
+
+  // ============ الدخول ============
+  function checkPass() {
+    const input = document.getElementById('pass').value.trim();
+    if (input === PASSWORD) {
+      document.getElementById('login-screen').classList.add('hidden');
+      setTimeout(() => {
+        document.getElementById('main').classList.add('show');
+        init();
+        startMusicAuto();
+      }, 800);
+    } else {
+      document.getElementById('err').style.display = 'block';
+      document.getElementById('pass').value = '';
+    }
+  }
+
+  let currentSlide = 0;
+  let typeTimer = null;
+  let currentIndex = 0;
+  let ageInterval = null;
+
+  function init() {
+    buildSlides();
+    buildDots();
+    makeParticles();
+    startSlideshow();
+    startAgeCounter();
+    setTimeout(() => typeMessage(MESSAGES[0]), 1500);
+  }
+
+  // ====== عداد العمر ======
+  function startAgeCounter() {
+    updateAge(true); // أول مرة بدون animation
+    if (ageInterval) clearInterval(ageInterval);
+    ageInterval = setInterval(() => updateAge(false), 1000);
+  }
+
+  function updateAge(firstTime) {
+    const now = new Date();
+    const diff = now - BIRTH_DATE;
+
+    const totalSeconds = Math.floor(diff / 1000);
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const totalHours   = Math.floor(totalMinutes / 60);
+    const totalDays    = Math.floor(totalHours / 24);
+
+    let years = now.getFullYear() - BIRTH_DATE.getFullYear();
+    const m = now.getMonth() - BIRTH_DATE.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < BIRTH_DATE.getDate())) years--;
+
+    setAgeValue('c-years', years, firstTime);
+    setAgeValue('c-days', totalDays, firstTime);
+    setAgeValue('c-hours', totalHours, firstTime);
+    setAgeValue('c-minutes', totalMinutes, firstTime);
+    setAgeValue('c-seconds', totalSeconds, firstTime);
+  }
+
+  function setAgeValue(id, value, skipAnim) {
+    const el = document.getElementById(id);
+    const formatted = value.toLocaleString('en-US');
+    if (el.textContent !== formatted) {
+      el.textContent = formatted;
+      if (!skipAnim) {
+        el.classList.remove('flash');
+        void el.offsetWidth; // إعادة تشغيل الـ animation
+        el.classList.add('flash');
+      }
+    }
+  }
+
+  // ====== الصور ======
+  function buildSlides() {
+    const container = document.getElementById('slideshow');
+    IMAGES.forEach((img, i) => {
+      const div = document.createElement('div');
+      div.className = 'slide' + (i === 0 ? ' active' : '');
+      div.style.backgroundImage = `url('${img}')`;
+      container.appendChild(div);
+    });
+    IMAGES.forEach(src => { const i = new Image(); i.src = src; });
+  }
+
+  function buildDots() {
+    const container = document.getElementById('dots');
+    MESSAGES.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.onclick = () => goTo(i);
+      container.appendChild(dot);
+    });
+  }
+
+  function startSlideshow() {
+    setInterval(() => { next(); }, 9000);
+  }
+
+  function next() {
+    currentIndex = (currentIndex + 1) % MESSAGES.length;
+    goTo(currentIndex);
+  }
+
+  function goTo(index) {
+    const slides = document.querySelectorAll('.slide');
+    slides[currentSlide].classList.remove('active');
+    currentSlide = index % IMAGES.length;
+    slides[currentSlide].classList.add('active');
+
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === index);
+    });
+
+    currentIndex = index;
+    typeMessage(MESSAGES[index]);
+  }
+
+  // ====== الكتابة ======
+  function typeMessage(text) {
+    const el = document.getElementById('typewriter');
+    const sig = document.getElementById('signature');
+    sig.classList.remove('show');
+
+    clearTimeout(typeTimer);
+    el.innerHTML = '<span class="cursor"></span>';
+
+    let i = 0;
+    function type() {
+      if (i < text.length) {
+        el.innerHTML = text.substring(0, i + 1) + '<span class="cursor"></span>';
+        i++;
+        typeTimer = setTimeout(type, 60);
+      } else {
+        setTimeout(() => sig.classList.add('show'), 400);
+      }
+    }
+    setTimeout(type, 400);
+  }
+
+  // ====== جزيئات ======
+  function makeParticles() {
+    setInterval(() => {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (8 + Math.random() * 8) + 's';
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 16000);
+    }, 400);
+  }
+
+  // ====== الموسيقى ======
+  const music = document.getElementById('bg-music');
+  let musicPlaying = false;
+
+  function toggleMusic() {
+    const icon = document.getElementById('music-icon');
+    const btn = document.getElementById('music-btn');
+
+    if (musicPlaying) {
+      music.pause();
+      icon.textContent = '🔇';
+      btn.classList.remove('playing');
+      musicPlaying = false;
+    } else {
+      music.play().catch(err => console.log('خطأ:', err));
+      icon.textContent = '🔊';
+      btn.classList.add('playing');
+      musicPlaying = true;
+    }
+  }
+
+  function startMusicAuto() {
+    music.volume = 0;
+    music.play().then(() => {
+      musicPlaying = true;
+      document.getElementById('music-icon').textContent = '🔊';
+      document.getElementById('music-btn').classList.add('playing');
+
+      let vol = 0;
+      const fade = setInterval(() => {
+        vol += 0.02;
+        if (vol >= 0.4) { vol = 0.4; clearInterval(fade); }
+        music.volume = vol;
+      }, 100);
+    }).catch(() => {
+      console.log('المتصفح منع التشغيل التلقائي — اضغطي على زر الموسيقى');
+    });
+  }
+</script>
+</body>
+</html>
