@@ -8,14 +8,16 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
   body {
     font-family: 'Cairo', sans-serif;
     background: #050d1f;
-    overflow: hidden;
     color: white;
     -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;
   }
@@ -42,7 +44,7 @@
     text-align: center;
     max-width: 420px;
     width: 90%;
-    box-shadow: 0 25px 80px rgba(0,50,150,0.5), 0 0 60px rgba(50,130,255,0.1);
+    box-shadow: 0 25px 80px rgba(0,50,150,0.5);
     animation: fadeUp 0.8s ease;
   }
   #login-box h1 {
@@ -67,7 +69,7 @@
     transition: 0.3s;
     letter-spacing: 3px;
   }
-  #login-box input:focus { border-color: #7db9ff; background: rgba(100,180,255,0.08); box-shadow: 0 0 30px rgba(125,185,255,0.2); }
+  #login-box input:focus { border-color: #7db9ff; background: rgba(100,180,255,0.08); }
   #login-box button {
     margin-top: 18px;
     width: 100%;
@@ -91,10 +93,13 @@
     display: none;
     width: 100%;
     height: 100vh;
+    height: 100dvh;
     position: relative;
+    overflow: hidden;
   }
   #main.show { display: block; }
 
+  /* ===== خلفية الصورة ===== */
   .slideshow { position: absolute; inset: 0; z-index: 0; }
   .slide {
     position: absolute;
@@ -102,63 +107,83 @@
     background-size: cover;
     background-position: center;
     opacity: 0;
-    transform: scale(1.1);
-    transition: opacity 2s ease, transform 8s ease;
-    filter: brightness(0.35) blur(3px) hue-rotate(180deg);
+    transform: scale(1.08);
+    transition: opacity 2s ease, transform 14s ease;
+    filter: brightness(0.75) saturate(1.1);
   }
   .slide.active { opacity: 1; transform: scale(1); }
   .overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(5,15,35,0.85) 0%, rgba(10,30,65,0.7) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(5,15,35,0.6) 0%,
+      rgba(10,30,65,0.7) 50%,
+      rgba(5,15,35,0.85) 100%
+    );
     z-index: 1;
   }
 
-  .content {
+  /* ===== نظام الشرائح المنزلقة ===== */
+  .slides-container {
     position: relative;
     z-index: 2;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+  }
+
+  .panel {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 15px;
+    padding: 20px;
     text-align: center;
-    overflow-y: auto;
+    opacity: 0;
+    transform: translateY(60px) scale(0.95);
+    transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+  .panel.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .panel.leaving {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.95);
   }
 
+  /* ===== عناوين ===== */
   .title {
     font-family: 'Amiri', serif;
-    font-size: clamp(24px, 4vw, 44px);
+    font-size: clamp(26px, 4.5vw, 48px);
     color: #7db9ff;
-    margin-bottom: 15px;
+    margin-bottom: 25px;
     letter-spacing: 1px;
-    text-shadow: 0 0 40px rgba(125,185,255,0.6);
-    opacity: 0;
-    animation: fadeIn 1.5s ease forwards 0.3s;
+    text-shadow: 0 0 40px rgba(125,185,255,0.6), 0 4px 20px rgba(0,0,0,0.8);
   }
 
   /* ===== عداد العمر ===== */
   .age-counter {
-    background: rgba(15,40,90,0.5);
+    background: rgba(15,40,90,0.55);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(100,180,255,0.25);
-    border-radius: 20px;
-    padding: 18px 22px;
-    margin-bottom: 15px;
+    border: 1px solid rgba(100,180,255,0.3);
+    border-radius: 22px;
+    padding: 25px 28px;
     max-width: 780px;
     width: 100%;
-    box-shadow: 0 20px 60px rgba(0,20,80,0.6), inset 0 1px 0 rgba(125,185,255,0.1);
-    opacity: 0;
-    animation: fadeIn 1.5s ease forwards 0.6s;
+    box-shadow: 0 20px 60px rgba(0,20,80,0.6), inset 0 1px 0 rgba(125,185,255,0.15);
   }
   .age-counter .age-label {
     font-family: 'Amiri', serif;
-    font-size: clamp(13px, 1.6vw, 18px);
+    font-size: clamp(15px, 1.8vw, 20px);
     color: #a8d0ff;
-    margin-bottom: 14px;
-    letter-spacing: 0.5px;
-    line-height: 1.5;
+    margin-bottom: 18px;
+    line-height: 1.6;
   }
   .age-grid {
     display: grid;
@@ -166,148 +191,127 @@
     gap: 10px;
   }
   .age-box {
-    background: linear-gradient(180deg, rgba(74,158,255,0.1), rgba(30,90,200,0.05));
-    border: 1px solid rgba(100,180,255,0.2);
+    background: linear-gradient(180deg, rgba(74,158,255,0.12), rgba(30,90,200,0.05));
+    border: 1px solid rgba(100,180,255,0.25);
     border-radius: 14px;
-    padding: 12px 6px;
+    padding: 14px 6px;
     transition: 0.3s;
-    overflow: hidden;
+    min-height: 78px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-height: 75px;
   }
   .age-box:hover {
-    background: linear-gradient(180deg, rgba(74,158,255,0.2), rgba(30,90,200,0.1));
-    border-color: rgba(125,185,255,0.5);
+    background: linear-gradient(180deg, rgba(74,158,255,0.22), rgba(30,90,200,0.1));
+    border-color: rgba(125,185,255,0.6);
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(50,130,255,0.2);
+    box-shadow: 0 10px 25px rgba(50,130,255,0.25);
   }
   .age-num {
     font-family: 'Cairo', sans-serif;
     font-weight: 700;
-    font-size: clamp(13px, 1.6vw, 22px);
+    font-size: clamp(14px, 1.7vw, 22px);
     color: #ffffff;
     text-shadow: 0 0 20px rgba(125,185,255,0.7);
     font-variant-numeric: tabular-nums;
-    display: block;
     line-height: 1.2;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    letter-spacing: -0.5px;
   }
-  .age-num.flash {
-    animation: flashNum 0.6s ease;
-  }
+  .age-num.flash { animation: flashNum 0.6s ease; }
   @keyframes flashNum {
     0%   { transform: translateY(0) scale(1); color: #ffffff; }
     40%  { transform: translateY(-6px) scale(1.08); color: #7db9ff; text-shadow: 0 0 30px #4a9eff; }
     100% { transform: translateY(0) scale(1); color: #ffffff; }
   }
   .age-name {
-    font-size: clamp(9px, 1vw, 12px);
+    font-size: clamp(10px, 1.1vw, 13px);
     color: #7aa5d8;
-    margin-top: 5px;
-    display: block;
+    margin-top: 6px;
     letter-spacing: 0.3px;
   }
 
-  /* ===== رسالة "من يوم ما اتولدت" ===== */
-  .birth-msg {
-    background: linear-gradient(135deg, rgba(74,158,255,0.15), rgba(30,90,200,0.05));
+  /* ===== رسالة ===== */
+  .msg-box {
+    background: linear-gradient(135deg, rgba(74,158,255,0.12), rgba(30,90,200,0.05));
     backdrop-filter: blur(20px);
     border: 1px solid rgba(100,180,255,0.3);
-    border-radius: 18px;
-    padding: 16px 25px;
-    margin-bottom: 15px;
-    max-width: 780px;
+    border-radius: 22px;
+    padding: 40px 45px;
+    max-width: 800px;
     width: 100%;
-    box-shadow: 0 15px 40px rgba(0,20,80,0.4), inset 0 1px 0 rgba(125,185,255,0.15);
-    opacity: 0;
-    animation: fadeIn 1.5s ease forwards 0.9s;
+    box-shadow: 0 25px 70px rgba(0,20,80,0.5), inset 0 1px 0 rgba(125,185,255,0.15);
   }
-  .birth-msg p {
+  .msg-box p {
     font-family: 'Amiri', serif;
-    font-size: clamp(14px, 1.7vw, 20px);
-    color: #b8d9ff;
-    line-height: 1.7;
-    font-style: italic;
-  }
-
-  /* ===== صندوق الجمل المتغيرة ===== */
-  .quote-box {
-    background: rgba(10,25,55,0.6);
-    backdrop-filter: blur(20px);
-    padding: 30px 35px;
-    border-radius: 20px;
-    border: 1px solid rgba(100,180,255,0.25);
-    max-width: 780px;
-    width: 100%;
-    margin: 0 auto;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(125,185,255,0.1);
-    min-height: 140px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .typewriter {
-    font-family: 'Amiri', serif;
-    font-size: clamp(16px, 2vw, 26px);
+    font-size: clamp(18px, 2.2vw, 28px);
     color: #ffffff;
-    max-width: 100%;
-    line-height: 1.7;
-    min-height: 2.5em;
-    text-shadow: 0 2px 20px rgba(0,0,0,0.8), 0 0 30px rgba(74,158,255,0.3);
+    line-height: 1.8;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.6);
   }
-  .typewriter .cursor {
-    display: inline-block;
-    width: 3px;
-    height: 1em;
-    background: #7db9ff;
-    margin-right: 4px;
-    vertical-align: middle;
-    animation: blink 0.8s infinite;
-    box-shadow: 0 0 12px #4a9eff;
+  .msg-box .emoji-big {
+    font-size: clamp(40px, 6vw, 70px);
+    display: block;
+    margin-bottom: 20px;
+    animation: bounce 2s ease infinite;
   }
-  @keyframes blink { 50% { opacity: 0; } }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
 
   /* ===== كلمة "اللي بعدو 🥳" ===== */
   .next-word {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.5);
     font-family: 'Cairo', sans-serif;
     font-weight: 900;
-    font-size: clamp(20px, 2.8vw, 34px);
-    background: linear-gradient(135deg, #7db9ff, #4a9eff, #1e5ac8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-top: 15px;
+    font-size: clamp(22px, 3vw, 36px);
+    color: #ffffff;
     opacity: 0;
-    transform: scale(0.5) rotate(-5deg);
     transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    filter: drop-shadow(0 0 20px rgba(74,158,255,0.6));
+    text-shadow: 0 0 30px rgba(74,158,255,0.9), 0 0 60px rgba(74,158,255,0.5);
+    white-space: nowrap;
+    z-index: 10;
   }
   .next-word.show {
     opacity: 1;
-    transform: scale(1) rotate(0deg);
-    animation: pulseNext 1s ease infinite alternate;
+    transform: translateX(-50%) scale(1);
+    animation: pulseNext 1.2s ease infinite alternate;
   }
   @keyframes pulseNext {
-    from { filter: drop-shadow(0 0 15px rgba(74,158,255,0.5)); }
-    to   { filter: drop-shadow(0 0 30px rgba(74,158,255,0.9)); }
+    from { transform: translateX(-50%) scale(1); text-shadow: 0 0 20px rgba(74,158,255,0.6); }
+    to   { transform: translateX(-50%) scale(1.08); text-shadow: 0 0 40px rgba(74,158,255,1), 0 0 80px rgba(74,158,255,0.6); }
   }
 
-  .signature {
-    font-family: 'Amiri', serif;
-    font-size: clamp(15px, 1.7vw, 20px);
-    color: #7db9ff;
-    margin-top: 12px;
-    opacity: 0;
-    transition: opacity 1.5s ease;
+  /* ===== نقاط التنقل ===== */
+  .dots {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 30;
   }
-  .signature.show { opacity: 1; }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: 0.4s;
+    border: 1px solid rgba(125,185,255,0.4);
+  }
+  .dot.active {
+    background: #7db9ff;
+    width: 32px;
+    border-radius: 5px;
+    box-shadow: 0 0 20px #4a9eff;
+  }
 
   /* جزيئات */
   .particle {
@@ -332,7 +336,6 @@
     from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  @keyframes fadeIn { to { opacity: 1; } }
 
   /* زر الموسيقى */
   #music-btn {
@@ -342,13 +345,13 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: rgba(15,40,90,0.6);
+    background: rgba(15,40,90,0.65);
     backdrop-filter: blur(15px);
-    border: 1px solid rgba(100,180,255,0.3);
+    border: 1px solid rgba(100,180,255,0.4);
     color: #7db9ff;
     font-size: 20px;
     cursor: pointer;
-    z-index: 20;
+    z-index: 40;
     transition: 0.4s;
     display: flex;
     align-items: center;
@@ -358,7 +361,7 @@
   #music-btn:hover {
     transform: scale(1.1);
     border-color: #7db9ff;
-    box-shadow: 0 0 25px rgba(74,158,255,0.5);
+    box-shadow: 0 0 25px rgba(74,158,255,0.6);
   }
   #music-btn.playing { animation: pulse 2s ease infinite; }
   @keyframes pulse {
@@ -368,14 +371,13 @@
 
   @media (max-width: 700px) {
     .age-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-    .age-counter { padding: 14px 14px; }
-    .quote-box { padding: 22px 18px; min-height: 120px; }
-    .age-num { font-size: 14px; }
-    .age-box { min-height: 65px; padding: 10px 4px; }
+    .age-counter { padding: 18px 15px; }
+    .msg-box { padding: 30px 22px; }
+    .next-word { bottom: 70px; }
   }
   @media (max-width: 450px) {
     .age-grid { grid-template-columns: repeat(2, 1fr); }
-    .age-num { font-size: 16px; }
+    .age-num { font-size: 15px; }
   }
 </style>
 </head>
@@ -401,36 +403,75 @@
     <span id="music-icon">🔇</span>
   </button>
 
-  <div class="content">
-    <h1 class="title">لأغلى إنسانة في الكون</h1>
+  <div class="slides-container" id="slides-container">
 
-    <!-- عداد العمر -->
-    <div class="age-counter">
-      <div class="age-label">🌷 عمرك يا أمي من يوم ما اتولدتي (1986) لحد اللحظة دي:</div>
-      <div class="age-grid">
-        <div class="age-box"><span class="age-num" id="c-years">0</span><span class="age-name">سنة</span></div>
-        <div class="age-box"><span class="age-num" id="c-days">0</span><span class="age-name">يوم</span></div>
-        <div class="age-box"><span class="age-num" id="c-hours">0</span><span class="age-name">ساعة</span></div>
-        <div class="age-box"><span class="age-num" id="c-minutes">0</span><span class="age-name">دقيقة</span></div>
-        <div class="age-box"><span class="age-num" id="c-seconds">0</span><span class="age-name">ثانية</span></div>
+    <!-- 🎂 الشريحة 1: العداد -->
+    <div class="panel active" data-panel="0">
+      <h1 class="title">لأغلى إنسانة في الكون 🌷</h1>
+      <div class="age-counter">
+        <div class="age-label">🌷 عمرك يا أمي من يوم ما اتولدتي (1986) لحد اللحظة دي:</div>
+        <div class="age-grid">
+          <div class="age-box"><span class="age-num" id="c-years">0</span><span class="age-name">سنة</span></div>
+          <div class="age-box"><span class="age-num" id="c-days">0</span><span class="age-name">يوم</span></div>
+          <div class="age-box"><span class="age-num" id="c-hours">0</span><span class="age-name">ساعة</span></div>
+          <div class="age-box"><span class="age-num" id="c-minutes">0</span><span class="age-name">دقيقة</span></div>
+          <div class="age-box"><span class="age-num" id="c-seconds">0</span><span class="age-name">ثانية</span></div>
+        </div>
       </div>
     </div>
 
-    <!-- رسالة "من يوم ما اتولدت" -->
-    <div class="birth-msg">
-      <p>✨ من يوم ما اتولدتي في 1/10/1986، والدنيا بقت أحلى... لأنها استلمت أجمل قلب فيها 🤍</p>
+    <!-- ✨ الشريحة 2: رسالة الميلاد -->
+    <div class="panel" data-panel="1">
+      <div class="msg-box">
+        <span class="emoji-big">✨🤍✨</span>
+        <p>من يوم ما اتولدتي في <strong>1 / 10 / 1986</strong>،<br>والدنيا بقت أحلى...<br>لأنها استلمت أجمل قلب فيها 🤍</p>
+      </div>
     </div>
 
-    <!-- صندوق الجمل المتغيرة -->
-    <div class="quote-box">
-      <div class="typewriter" id="typewriter"></div>
-      <div class="next-word" id="next-word">اللي بعدو 🥳</div>
-      <div class="signature" id="signature">— ابنك اللي بيحبك 🤍</div>
+    <!-- ❤️ الشريحة 3: رسالة 1 -->
+    <div class="panel" data-panel="2">
+      <div class="msg-box">
+        <span class="emoji-big">🌙</span>
+        <p>يا أمي، إنتي أول حاجة بحبها في الدنيا،<br>وآخر حاجة بفكر فيها قبل ما أنام</p>
+      </div>
     </div>
+
+    <!-- 💕 الشريحة 4: رسالة 2 -->
+    <div class="panel" data-panel="3">
+      <div class="msg-box">
+        <span class="emoji-big">❤️</span>
+        <p>كل سهرة سهرتيها عشاني،<br>وكل دعوة دعيتيها في سجودك،<br>هي سر نجاحي في الدنيا</p>
+      </div>
+    </div>
+
+    <!-- 🤍 الشريحة 5: رسالة 3 -->
+    <div class="panel" data-panel="4">
+      <div class="msg-box">
+        <span class="emoji-big">🤍</span>
+        <p>شكراً على كل دمعة فرح شوفتيها في عنيكي،<br>وكل حضن دفّاني<br>لما الدنيا كانت تقسى عليّ</p>
+      </div>
+    </div>
+
+    <!-- 🌷 الشريحة 6: رسالة 4 -->
+    <div class="panel" data-panel="5">
+      <div class="msg-box">
+        <span class="emoji-big">🌷</span>
+        <p>هفضل أحاول أكون ابن يستاهل كل تعبك،<br>كل يوم، لحد آخر يوم في عمري</p>
+        <p style="margin-top: 25px; color: #7db9ff; font-size: 0.8em;">— ابنك اللي بيحبك 🤍</p>
+      </div>
+    </div>
+
   </div>
+
+  <!-- كلمة "اللي بعدو 🥳" -->
+  <div class="next-word" id="next-word">اللي بعدو 🥳</div>
+
+  <!-- النقاط -->
+  <div class="dots" id="dots"></div>
 </div>
 
-<audio id="bg-music" loop preload="auto">
+<!-- موسيقى من مكتبة خارجية -->
+<audio id="bg-music" loop preload="auto" crossorigin="anonymous">
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
@@ -441,12 +482,9 @@
 
   const IMAGES = ["hala.png", "hala.png", "hala.png", "hala.png"];
 
-  const MESSAGES = [
-    "يا أمي، إنتي أول حاجة بحبها في الدنيا، وآخر حاجة بفكر فيها قبل ما أنام 🌙",
-    "كل سهرة سهرتيها عشاني، وكل دعوة دعيتيها في سجودك، هي سر نجاحي في الدنيا ❤️",
-    "شكراً على كل دمعة فرح شوفتيها في عنيكي، وكل حضن دفّاني لما الدنيا كانت تقسى عليّ 🤍",
-    "هفضل أحاول أكون ابن يستاهل كل تعبك، كل يوم، لحد آخر يوم في عمري 🌷"
-  ];
+  // ⏱️ مدة كل شريحة (بالمللي ثانية)
+  const PANEL_DURATION = 8000; // 8 ثواني
+  const NEXT_WORD_DELAY = 6000; // تظهر "اللي بعدو" بعد 6 ثواني
 
   // ============ حماية ============
   document.addEventListener('contextmenu', e => e.preventDefault());
@@ -477,17 +515,18 @@
     }
   }
 
-  let currentIndex = 0;
-  let typeTimer = null;
+  let currentPanel = 0;
+  let panelTimer = null;
+  let nextWordTimer = null;
   let ageInterval = null;
-  let messageTimer = null;
 
   function init() {
     buildSlides();
+    buildDots();
     makeParticles();
     startSlideshow();
     startAgeCounter();
-    showNextMessage(0); // ابدأ أول رسالة
+    startPanels();
   }
 
   // ====== عداد العمر ======
@@ -519,6 +558,7 @@
 
   function setAgeValue(id, value, skipAnim) {
     const el = document.getElementById(id);
+    if (!el) return;
     const formatted = value.toLocaleString('en-US');
     if (el.textContent !== formatted) {
       el.textContent = formatted;
@@ -530,7 +570,7 @@
     }
   }
 
-  // ====== الصور ======
+  // ====== خلفية الصور ======
   function buildSlides() {
     const container = document.getElementById('slideshow');
     IMAGES.forEach((img, i) => {
@@ -552,53 +592,62 @@
     }, 9000);
   }
 
-  // ====== الرسائل المتسلسلة ======
-  function showNextMessage(index) {
-    if (index >= MESSAGES.length) {
-      // خلصت كل الرسائل، ابدأ من الأول
-      index = 0;
-    }
+  // ====== نقاط التنقل ======
+  function buildDots() {
+    const container = document.getElementById('dots');
+    const panels = document.querySelectorAll('.panel');
+    panels.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.onclick = () => goToPanel(i);
+      container.appendChild(dot);
+    });
+  }
 
-    const typeEl = document.getElementById('typewriter');
-    const nextWordEl = document.getElementById('next-word');
-    const sig = document.getElementById('signature');
+  // ====== نظام الشرائح ======
+  function startPanels() {
+    scheduleNext();
+  }
 
-    // إعادة تعيين
-    sig.classList.remove('show');
-    nextWordEl.classList.remove('show');
-    typeEl.innerHTML = '<span class="cursor"></span>';
-    typeEl.style.opacity = '1';
+  function scheduleNext() {
+    clearTimeout(panelTimer);
+    clearTimeout(nextWordTimer);
+    hideNextWord();
 
-    clearTimeout(typeTimer);
-    clearTimeout(messageTimer);
+    // أظهر "اللي بعدو" قبل نهاية الشريحة بـ 2 ثانية
+    nextWordTimer = setTimeout(() => {
+      showNextWord();
+    }, NEXT_WORD_DELAY);
 
-    // اكتب الرسالة
-    let i = 0;
-    const text = MESSAGES[index];
-    function type() {
-      if (i < text.length) {
-        typeEl.innerHTML = text.substring(0, i + 1) + '<span class="cursor"></span>';
-        i++;
-        typeTimer = setTimeout(type, 55);
-      } else {
-        // خلصت الرسالة
-        setTimeout(() => sig.classList.add('show'), 300);
-        // بعد ثانيتين، اظهر "اللي بعدو 🥳"
-        setTimeout(() => nextWordEl.classList.add('show'), 1800);
-        // بعد 4 ثواني، اختفي كل حاجة وابدأ اللي بعدها
-        messageTimer = setTimeout(() => {
-          typeEl.style.transition = 'opacity 0.5s';
-          typeEl.style.opacity = '0';
-          nextWordEl.classList.remove('show');
-          sig.classList.remove('show');
-          setTimeout(() => {
-            typeEl.style.transition = 'none';
-            showNextMessage(index + 1);
-          }, 600);
-        }, 4200);
-      }
-    }
-    setTimeout(type, 300);
+    // انتقل للشريحة التالية
+    panelTimer = setTimeout(() => {
+      const panels = document.querySelectorAll('.panel');
+      const nextIndex = (currentPanel + 1) % panels.length;
+      goToPanel(nextIndex);
+    }, PANEL_DURATION);
+  }
+
+  function goToPanel(index) {
+    const panels = document.querySelectorAll('.panel');
+    const dots = document.querySelectorAll('.dot');
+
+    panels[currentPanel].classList.remove('active');
+    panels[currentPanel].classList.add('leaving');
+    setTimeout(() => panels[currentPanel].classList.remove('leaving'), 900);
+
+    currentPanel = index;
+    panels[currentPanel].classList.add('active');
+
+    dots.forEach((d, i) => d.classList.toggle('active', i === index));
+
+    scheduleNext();
+  }
+
+  function showNextWord() {
+    document.getElementById('next-word').classList.add('show');
+  }
+  function hideNextWord() {
+    document.getElementById('next-word').classList.remove('show');
   }
 
   // ====== جزيئات ======
@@ -648,7 +697,7 @@
         music.volume = vol;
       }, 100);
     }).catch(() => {
-      console.log('المتصفح منع التشغيل التلقائي');
+      console.log('المتصفح منع التشغيل التلقائي — اضغطي على زر الموسيقى');
     });
   }
 </script>
